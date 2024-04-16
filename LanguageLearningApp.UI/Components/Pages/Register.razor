@@ -1,0 +1,40 @@
+﻿@page "/register"
+
+<div class="container-fluid">
+    <h3 class="mb-3">Register User</h3>
+    <form>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" placeholder="Enter your username" @bind="username">
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email" @bind="email">
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="password">
+        </div>
+
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password" @bind="confirmPassword">
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Register</button>
+    </form>
+</div>
+
+@code {
+    private string username;
+    private string email;
+    private string password;
+    private string confirmPassword;
+
+    private async Task RegisterUser()
+    {
+        Console.WriteLine($"Registering user: Username - {username}, Email - {email}");
+    }
+}

@@ -1,0 +1,28 @@
+﻿@page "/login"
+
+<div class="container-fluid">
+    <h3 class="mb-3">Login</h3>
+    <form>
+        <div class="mb-3">
+            <label for="usernameOrEmail" class="form-label">Username or Email</label>
+            <input type="text" class="form-control" id="usernameOrEmail" placeholder="Enter your username or email" @bind="usernameOrEmail">
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Enter your password" @bind="password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" @onclick="LoginUser">Login</button>
+    </form>
+</div>
+
+@code {
+    private string usernameOrEmail;
+    private string password;
+
+    private async Task LoginUser()
+    {
+        Console.WriteLine($"Logging in: Username or Email - {usernameOrEmail}");
+    }
+}
