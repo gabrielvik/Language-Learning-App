@@ -1,4 +1,7 @@
 ﻿@page "/register"
+@rendermode InteractiveServer
+
+@inject UserService UserService
 
 <div class="container-fluid">
     <h3 class="mb-3">Register User</h3>
@@ -23,7 +26,7 @@
             <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password" @bind="confirmPassword">
         </div>
 
-        <button type="submit" class="btn btn-primary" @onclick="RegisterUser">Register</button>
+        <button type="button" class="btn btn-primary" @onclick="RegisterUser">Register</button>
     </form>
 </div>
 
@@ -35,6 +38,30 @@
 
     private async Task RegisterUser()
     {
-        Console.WriteLine($"Registering user: Username - {username}, Email - {email}");
+        
+        if (password != confirmPassword)
+        {
+            Console.WriteLine("Passwords do not match.");
+            return;
+        }
+
+        var registrationDto = new UserRegistrationDTO
+        {
+            Username = username,
+            Email = email,
+            Password = password
+        };
+
+        var registrationSuccessful = await UserService.RegisterUserAsync(registrationDto);
+
+        if (registrationSuccessful)
+        {
+
+        }
+        else
+        {
+
+        }
+
     }
 }

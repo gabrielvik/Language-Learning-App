@@ -7,7 +7,7 @@
 
     <main>
         <div class="top-row px-4">
-            <NavLink href="/register">Register</NavLink>
+            <NavLink onchange="OnChange" href="/register">Register</NavLink>
             <NavLink href="/login">Login</NavLink>
         </div>
 
@@ -22,3 +22,10 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    void OnChange()
+    {
+
+    }
+}

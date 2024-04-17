@@ -17,20 +17,11 @@ namespace LanguageLearningApp.API
 
             builder.Services.AddControllers();
 
+            builder.Services.AddScoped<UserService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-
-            /**********
-             ** CORS Cross-Origin Resource Sharing**
-             **********/
-            builder.Services.AddCors(policy =>
-            {
-                policy.AddPolicy("CorsAllAccessPolicy", opt =>
-                    opt.AllowAnyOrigin()
-                       .AllowAnyHeader()
-                       .AllowAnyMethod());
-            });
 
             app.UseHttpsRedirection();
 
@@ -38,6 +29,7 @@ namespace LanguageLearningApp.API
             app.UseHttpsRedirection();
 
             app.MapControllers();
+
 
             if (app.Environment.IsDevelopment())
             {

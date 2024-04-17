@@ -1,4 +1,7 @@
 using LanguageLearningApp.UI.Components;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace LanguageLearningApp.UI
 {
@@ -10,7 +13,14 @@ namespace LanguageLearningApp.UI
 
             // Add services to the container.
             builder.Services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+                             .AddInteractiveServerComponents();
+
+            builder.Services.AddScoped<UserService>();
+            // Register HttpClient for UserService
+            builder.Services.AddHttpClient<UserService>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7134/api/");
+            });
 
             var app = builder.Build();
 
@@ -28,7 +38,7 @@ namespace LanguageLearningApp.UI
             app.UseAntiforgery();
 
             app.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
+               .AddInteractiveServerRenderMode();
 
             app.Run();
         }
