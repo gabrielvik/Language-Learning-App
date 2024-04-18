@@ -122,7 +122,7 @@ namespace LanguageLearningApp.API.Services
 
         public static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
         public static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) || username.Length > 5 || username.Length < 20;
-        public static bool IsValidPassword(string password) => password.Length > 8 || password.Any(char.IsLetterOrDigit);
+        public static bool IsValidPassword(string password) => password.Length > 8 && password.Any(c => !char.IsLetterOrDigit(c));
 
         private string HashPassword(string password)
         {

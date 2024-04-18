@@ -1,6 +1,5 @@
 ﻿@page "/register"
 @rendermode InteractiveServer
-
 @inject UserService UserService
 
 <div class="container-fluid">
@@ -28,6 +27,25 @@
 
         <button type="button" class="btn btn-primary" @onclick="RegisterUser">Register</button>
     </form>
+
+    <!-- Display error messages -->
+    @if (errorMessage != null && errorMessage.Any())
+    {
+        <div class="alert alert-danger mt-3 mb-0">
+            @foreach (var error in errorMessage)
+            {
+                <p class="mb-0">@error</p>
+            }
+        </div>
+    }
+
+    <!-- Display success message -->
+    @if (registrationSuccessful)
+    {
+        <div class="alert alert-success mt-3 mb-0">
+            <p class="mb-0">User registered successfully!</p>
+        </div>
+    }
 </div>
 
 @code {
@@ -35,32 +53,32 @@
     private string email;
     private string password;
     private string confirmPassword;
+    private List<string> errorMessage = new List<string>();
+    private bool registrationSuccessful = false;
 
     private async Task RegisterUser()
     {
+        // Clear previous error messages
+        errorMessage.Clear();
+
         if (password != confirmPassword)
         {
-            Console.WriteLine("Passwords do not match.");
+            errorMessage.Add("Passwords do not match.");
             return;
         }
 
         var registrationDto = new UserRegistrationDTO
+            {
+                Username = username,
+                Email = email,
+                Password = password
+            };
+
+        registrationSuccessful = await UserService.RegisterUserAsync(registrationDto);
+
+        if (!registrationSuccessful)
         {
-            Username = username,
-            Email = email,
-            Password = password
-        };
-
-        var registrationSuccessful = await UserService.RegisterUserAsync(registrationDto);
-
-        if (registrationSuccessful)
-        {
-
+            errorMessage = UserService.ErrorMessages.Any() ? new List<string>(UserService.ErrorMessages) : new List<string> { "Failed to register user." };
         }
-        else
-        {
-
-        }
-
     }
 }
