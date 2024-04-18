@@ -2,21 +2,21 @@
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using LanguageLearningApp.Data.DTOs;
+using LanguageLearningApp.UI.Clients;
 
 public class UserService
 {
     private readonly HttpClient _httpClient;
 
-    public UserService(HttpClient httpClient)
+    public UserService(UserHttpClient userHttpClient)
     {
-        _httpClient = httpClient;
+        _httpClient = userHttpClient.HttpClient;
     }
 
     public async Task<bool> RegisterUserAsync(UserRegistrationDTO model)
     {
-        var response = await _httpClient.PostAsJsonAsync("register", model); // Endpoint should be relative
+        var response = await _httpClient.PostAsJsonAsync("register", model);
 
         return response.IsSuccessStatusCode;
     }
-
 }

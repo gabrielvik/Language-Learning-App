@@ -61,6 +61,69 @@ namespace LanguageLearningApp.API.Services
             }
         }
 
+        public async Task<User> GetUserAsync(string username)
+        {
+            try
+            {
+                // Find the user by username
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting user: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                // Retrieve all users from the database
+                var users = await _dbContext.Users.ToListAsync();
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting all users: {ex.Message}");
+                return new List<User>(); // Return an empty list if an error occurs
+            }
+        }
+
+        public async Task<bool> IsEmailTakenAsync(string email)
+        {
+            try
+            {
+                // Check if any user has the provided email
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+                return user != null; // Returns true if email is already taken
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking email: {ex.Message}");
+                return true; // Treat as taken on error (for safety)
+            }
+        }
+
+        public async Task<bool> IsUsernameTakenAsync(string username)
+        {
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+                return user != null; 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking username: {ex.Message}");
+                return true; 
+            }
+        }
+
+        public static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
+        public static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) || username.Length > 5 || username.Length < 20;
+        public static bool IsValidPassword(string password) => password.Length > 8 || password.Any(char.IsLetterOrDigit);
+
         private string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);

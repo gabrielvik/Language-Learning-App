@@ -1,7 +1,5 @@
-using LanguageLearningApp.UI.Components;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+using LanguageLearningApp.UI.Clients;
+
 
 namespace LanguageLearningApp.UI
 {
@@ -16,11 +14,7 @@ namespace LanguageLearningApp.UI
                              .AddInteractiveServerComponents();
 
             builder.Services.AddScoped<UserService>();
-            // Register HttpClient for UserService
-            builder.Services.AddHttpClient<UserService>(client =>
-            {
-                client.BaseAddress = new Uri("https://localhost:7134/api/");
-            });
+            builder.Services.AddHttpClient<UserHttpClient>();
 
             var app = builder.Build();
 
