@@ -49,10 +49,9 @@ namespace LanguageLearningApp.API.Services
                 }
 
                 // Hash the entered password for comparison
-                var hashedEnteredPassword = HashPassword(password);
+                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
 
-                // Compare the hashes
-                return user.PasswordHash == hashedEnteredPassword;
+                return isPasswordCorrect;
             }
             catch (Exception ex)
             {

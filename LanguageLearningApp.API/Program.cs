@@ -1,3 +1,5 @@
+using Microsoft.OpenApi.Models;
+
 namespace LanguageLearningApp.API
 {
     public class Program
@@ -18,6 +20,11 @@ namespace LanguageLearningApp.API
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<UserService>();
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Language Learning API", Version = "v1" });
+            });
 
             var app = builder.Build();
 
