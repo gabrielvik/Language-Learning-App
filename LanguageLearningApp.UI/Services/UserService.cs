@@ -29,7 +29,7 @@ public class UserService
                 return false; // Registration failed due to empty fields
             }
 
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("register", model);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("user/register", model);
             if (response.IsSuccessStatusCode)
             {
                 return true; // Registration successful
@@ -71,7 +71,7 @@ public class UserService
                 return false; // Authentication failed due to empty fields
             }
 
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("login", model);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("user/login", model);
             if (response.IsSuccessStatusCode)
             {
                 return true; // Authentication successful

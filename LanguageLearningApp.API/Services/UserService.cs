@@ -1,4 +1,7 @@
-﻿using LanguageLearningApp.Data.Entities;
+﻿using Azure.Core;
+using LanguageLearningApp.Data.Entities;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace LanguageLearningApp.API.Services
 {
@@ -11,16 +14,17 @@ namespace LanguageLearningApp.API.Services
             _dbContext = dbContext;
         }
 
-        public async Task<bool> AddUserAsync(string username, string password, string email)
+        public async Task<bool> AddUserAsync(User user)
         {
             try
             {
                 // Create a new User entity
                 var newUser = new User
                 {
-                    Username = username,
-                    Email = email,
-                    PasswordHash = HashPassword(password)
+                    Username = user.Username,
+                    Email = user.Email,
+                    PasswordHash = user.PasswordHash,
+                    PasswordSalt = user.PasswordSalt
                 };
 
                 // Add the user to the database
@@ -42,16 +46,7 @@ namespace LanguageLearningApp.API.Services
             try
             {
                 var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-                if (user == null)
-                {
-                    // User not found
-                    return false;
-                }
-
-                // Hash the entered password for comparison
-                var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
-
-                return isPasswordCorrect;
+                return true;
             }
             catch (Exception ex)
             {
@@ -117,15 +112,6 @@ namespace LanguageLearningApp.API.Services
                 Console.WriteLine($"Error checking username: {ex.Message}");
                 return true; 
             }
-        }
-
-        public static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
-        public static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) || username.Length > 5 || username.Length < 20;
-        public static bool IsValidPassword(string password) => password.Length > 8 && password.Any(c => !char.IsLetterOrDigit(c));
-
-        private string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
         }
     }
 }

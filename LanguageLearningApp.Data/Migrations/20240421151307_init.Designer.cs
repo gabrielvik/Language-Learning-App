@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageLearningApp.Data.Migrations
 {
     [DbContext(typeof(LanguageAppContext))]
-    [Migration("20240417125945_init")]
+    [Migration("20240421151307_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -36,9 +36,13 @@ namespace LanguageLearningApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Username")
                         .IsRequired()
