@@ -121,7 +121,7 @@ namespace LanguageLearningApp.API.Controllers
 
 
         private static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
-        private static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) || username.Length > 5 || username.Length < 20;
+        private static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) && username.Length > 5 && username.Length < 20;
         private static bool IsValidPassword(string password) => password.Length > 8 && password.Any(c => !char.IsLetterOrDigit(c));
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
