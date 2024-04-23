@@ -64,7 +64,8 @@ namespace LanguageLearningApp.API.Controllers
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, "User")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
@@ -118,6 +119,27 @@ namespace LanguageLearningApp.API.Controllers
             else
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to add user.");
         }
+
+        /*
+         * For testig auth
+         * [Authorize]
+        [HttpGet("email")]
+        public IActionResult GetUserEmail()
+        {
+            // Retrieve the user's claims from the HttpContext
+            var usernameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            var emailClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+
+            if (usernameClaim != null && emailClaim != null)
+            {
+                string username = usernameClaim.Value;
+                string email = emailClaim.Value;
+
+                return Ok(new { Username = username, Email = email });
+            }
+
+            return BadRequest("User information not found.");
+        }*/
 
 
         private static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
