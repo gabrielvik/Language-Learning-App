@@ -41,20 +41,6 @@ namespace LanguageLearningApp.API.Services
             }
         }
 
-        public async Task<bool> AuthenticateUserAsync(string username, string password)
-        {
-            try
-            {
-                var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error authenticating user: {ex.Message}");
-                return false;
-            }
-        }
-
         public async Task<User> GetUserAsync(string username)
         {
             try

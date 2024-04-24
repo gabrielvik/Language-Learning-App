@@ -29,34 +29,79 @@ namespace LanguageLearningApp.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.GetUserAsync(model.Username);
-            if (user == null)
+            var getUser = await _userService.GetUserAsync(model.Username);
+            if (getUser == null)
+            {
+                ModelState.AddModelError("Username", "Invalid username or password.");
+                return BadRequest(ModelState);
+            }
+            if (getUser == null)
             {
                 ModelState.AddModelError("Username", "Invalid username or password.");
                 return BadRequest(ModelState);
             }
 
-            if (user == null)
+            if (!VerifyPasswordHash(model.Password, getUser.PasswordHash, getUser.PasswordSalt))
             {
                 ModelState.AddModelError("Username", "Invalid username or password.");
                 return BadRequest(ModelState);
             }
 
-            if (!VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                ModelState.AddModelError("Username", "Invalid username or password.");
-                return BadRequest(ModelState);
-            }
+            user = getUser;
 
-            var isAuthenticated = await _userService.AuthenticateUserAsync(model.Username, model.Password);
-            if (!isAuthenticated)
+            string token = CreateToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(refreshToken);
+
+            return Ok(token);
+        }
+
+        private RefreshToken GenerateRefreshToken()
+        {
+            var refreshToken = new RefreshToken
             {
-                ModelState.AddModelError("Username", "Invalid username or password.");
-                return BadRequest(ModelState);
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Expires = DateTime.Now.AddDays(7),
+                Created = DateTime.Now
+            };
+
+            return refreshToken;
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<string>> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (!user.RefreshToken.Token.Equals(refreshToken))
+            {
+                return Unauthorized("Invalid Refresh Token.");
+            }
+            else if (user.RefreshToken.Expires < DateTime.Now)
+            {
+                return Unauthorized("Token expired.");
             }
 
             string token = CreateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+            SetRefreshToken(newRefreshToken);
+
             return Ok(token);
+        }
+
+        private void SetRefreshToken(RefreshToken newRefreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = newRefreshToken.Expires
+            };
+            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+
+            user.RefreshToken.Token = newRefreshToken.Token;
+            user.RefreshToken.Created = newRefreshToken.Created;
+            user.RefreshToken.Expires = newRefreshToken.Expires;
         }
 
         private string CreateToken(User user)
@@ -120,9 +165,7 @@ namespace LanguageLearningApp.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to add user.");
         }
 
-        /*
-         * For testig auth
-         * [Authorize]
+        [Authorize]
         [HttpGet("email")]
         public IActionResult GetUserEmail()
         {
@@ -139,7 +182,7 @@ namespace LanguageLearningApp.API.Controllers
             }
 
             return BadRequest("User information not found.");
-        }*/
+        }
 
 
         private static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");

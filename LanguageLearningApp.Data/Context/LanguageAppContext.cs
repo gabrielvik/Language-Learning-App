@@ -12,6 +12,15 @@ namespace LanguageLearningApp.Data.Context
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>();
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.RefreshToken)
+                .WithOne(rt => rt.User)
+                .HasForeignKey<RefreshToken>(rt => rt.UserId);
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasIndex(rt => rt.Token)
+                .IsUnique();
         }
     }
 }
