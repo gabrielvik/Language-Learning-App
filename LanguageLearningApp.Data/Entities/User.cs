@@ -9,6 +9,6 @@
         public byte[] PasswordSalt { get; set; }
 
         // Navigation property for RefreshToken
-        public RefreshToken RefreshToken { get; set; } = new RefreshToken();
+        public RefreshToken? RefreshToken { get; set; }
     }
 }

@@ -85,19 +85,16 @@ namespace LanguageLearningApp.Data.Migrations
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("LanguageLearningApp.Data.Entities.User", "User")
+                    b.HasOne("LanguageLearningApp.Data.Entities.User", null)
                         .WithOne("RefreshToken")
                         .HasForeignKey("LanguageLearningApp.Data.Entities.RefreshToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.User", b =>
                 {
-                    b.Navigation("RefreshToken")
-                        .IsRequired();
+                    b.Navigation("RefreshToken");
                 });
 #pragma warning restore 612, 618
         }

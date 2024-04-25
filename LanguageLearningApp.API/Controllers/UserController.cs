@@ -54,6 +54,14 @@ namespace LanguageLearningApp.API.Controllers
             var refreshToken = GenerateRefreshToken();
             SetRefreshToken(refreshToken);
 
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(1)
+            };
+
+            Response.Cookies.Append("accessToken", token);
+
             return Ok(token);
         }
 
@@ -98,6 +106,8 @@ namespace LanguageLearningApp.API.Controllers
                 Expires = newRefreshToken.Expires
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+
+            user.RefreshToken = new RefreshToken();
 
             user.RefreshToken.Token = newRefreshToken.Token;
             user.RefreshToken.Created = newRefreshToken.Created;
@@ -156,6 +166,11 @@ namespace LanguageLearningApp.API.Controllers
             user.Email = model.Email;
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+
+            string token = CreateToken(user);
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            SetRefreshToken(refreshToken);
 
             var userAdded = await _userService.AddUserAsync(user);
 

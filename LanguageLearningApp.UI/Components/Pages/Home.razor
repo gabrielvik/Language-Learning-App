@@ -1,7 +1,23 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject UserService UserService
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+<p>Welcome to your new app.</p>
+<p>Token: @UserService.GetRefreshToken()</p>
+<p>User Info: @UserInfoResult</p> <!-- Display the user info here -->
+@code {
+    private string UserInfoResult;
 
-Welcome to your new app.
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserService != null)
+        {
+            // Call the Initialize method to get the user info
+            string userInfo = await UserService.Initialize();
+            UserInfoResult = userInfo; // Set UserInfoResult to the obtained user info
+        }
+    }
+}

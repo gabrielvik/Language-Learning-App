@@ -11,11 +11,9 @@ namespace LanguageLearningApp.Data.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>();
-
             modelBuilder.Entity<User>()
                 .HasOne(u => u.RefreshToken)
-                .WithOne(rt => rt.User)
+                .WithOne()
                 .HasForeignKey<RefreshToken>(rt => rt.UserId);
 
             modelBuilder.Entity<RefreshToken>()

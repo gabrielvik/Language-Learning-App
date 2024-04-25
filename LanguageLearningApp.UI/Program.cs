@@ -15,6 +15,7 @@ namespace LanguageLearningApp.UI
 
             builder.Services.AddScoped<UserService>();
             builder.Services.AddHttpClient<UserHttpClient>();
+            builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
 

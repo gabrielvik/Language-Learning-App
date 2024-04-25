@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageLearningApp.Data.Migrations
 {
     [DbContext(typeof(LanguageAppContext))]
-    [Migration("20240424110802_init")]
+    [Migration("20240425130256_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -88,19 +88,16 @@ namespace LanguageLearningApp.Data.Migrations
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("LanguageLearningApp.Data.Entities.User", "User")
+                    b.HasOne("LanguageLearningApp.Data.Entities.User", null)
                         .WithOne("RefreshToken")
                         .HasForeignKey("LanguageLearningApp.Data.Entities.RefreshToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.User", b =>
                 {
-                    b.Navigation("RefreshToken")
-                        .IsRequired();
+                    b.Navigation("RefreshToken");
                 });
 #pragma warning restore 612, 618
         }

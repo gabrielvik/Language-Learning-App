@@ -24,7 +24,8 @@ namespace LanguageLearningApp.API.Services
                     Username = user.Username,
                     Email = user.Email,
                     PasswordHash = user.PasswordHash,
-                    PasswordSalt = user.PasswordSalt
+                    PasswordSalt = user.PasswordSalt,
+                    RefreshToken = user.RefreshToken
                 };
 
                 // Add the user to the database
@@ -35,7 +36,6 @@ namespace LanguageLearningApp.API.Services
             }
             catch (Exception ex)
             {
-                // Handle any exceptions (e.g., database errors)
                 Console.WriteLine($"Error adding user: {ex.Message}");
                 return false; // Failed to add user
             }

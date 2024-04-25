@@ -1,19 +1,30 @@
-﻿using LanguageLearningApp.UI.Clients;
+﻿using LanguageLearningApp.Data.Context;
+using LanguageLearningApp.UI.Clients;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using Azure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
-public class UserService
+public class UserService : ControllerBase
 {
     private readonly HttpClient _httpClient;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public User User { get; private set; }
 
     public List<string> ErrorMessages { get; private set; } = new List<string>();
 
-    public UserService(UserHttpClient userHttpClient)
+    public UserService(UserHttpClient userHttpClient, IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = userHttpClient.HttpClient;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<bool> RegisterUserAsync(UserRegistrationDTO model)
@@ -22,6 +33,7 @@ public class UserService
         {
             // Clear previous error messages
             ErrorMessages.Clear();
+
 
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
             {
@@ -58,11 +70,39 @@ public class UserService
         }
     }
 
+    public string GetRefreshToken()
+    {
+		var context = _httpContextAccessor.HttpContext;
+		return context?.Request.Cookies["accessToken"];
+	}
+    public async Task<string> Initialize()
+    {
+        var refreshToken = GetRefreshToken();
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return "Refresh token is missing or invalid.";
+        }
+
+        // Set the Authorization header with the refresh token
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refreshToken);
+
+        HttpResponseMessage response = await _httpClient.GetAsync("User/email");
+
+        if (response.IsSuccessStatusCode)
+        {
+            string userInfo = await response.Content.ReadAsStringAsync();
+            return userInfo;
+        }
+        else
+        {
+            return "Failed to retrieve user information. HTTP status code: " + response.StatusCode;
+        }
+    }
+
     public async Task<bool> AuthenticateUserAsync(UserLoginDTO model)
     {
         try
         {
-            // Clear previous error messages
             ErrorMessages.Clear();
 
             if (string.IsNullOrEmpty(model.Username) || string.IsNullOrEmpty(model.Password))
@@ -74,11 +114,10 @@ public class UserService
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync("user/login", model);
             if (response.IsSuccessStatusCode)
             {
-                return true; // Authentication successful
+                return true;
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                // Invalid username or password
                 ErrorMessages.Add("Invalid username or password.");
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
@@ -101,7 +140,7 @@ public class UserService
         catch (Exception ex)
         {
             ErrorMessages.Add("Failed to authenticate user: " + ex.Message);
-            return false; // Authentication failed due to exception
+            return false;
         }
     }
 }
