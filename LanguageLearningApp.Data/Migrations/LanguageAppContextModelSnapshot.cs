@@ -51,7 +51,7 @@ namespace LanguageLearningApp.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.User", b =>

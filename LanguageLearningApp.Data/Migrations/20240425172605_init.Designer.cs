@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageLearningApp.Data.Migrations
 {
     [DbContext(typeof(LanguageAppContext))]
-    [Migration("20240425130256_init")]
+    [Migration("20240425172605_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,7 +54,7 @@ namespace LanguageLearningApp.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("LanguageLearningApp.Data.Entities.User", b =>

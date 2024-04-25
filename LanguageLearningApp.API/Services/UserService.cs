@@ -14,6 +14,37 @@ namespace LanguageLearningApp.API.Services
             _dbContext = dbContext;
         }
 
+        public async Task<bool> UpdateRefreshToken(User user, RefreshToken refreshToken)
+        {
+            try
+            {
+                var dbUser = await _dbContext.Users
+                    .Include(u => u.RefreshToken)
+                    .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+                if (dbUser != null)
+                {
+                    // Update the RefreshToken properties
+                    dbUser.RefreshToken = refreshToken;
+
+                    await _dbContext.SaveChangesAsync();
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle and log any exceptions
+                Console.WriteLine($"Error updating refresh token: {ex.Message}");
+                throw; // Rethrow the exception to propagate it upwards
+            }
+        }
+
+
         public async Task<bool> AddUserAsync(User user)
         {
             try
@@ -68,6 +99,27 @@ namespace LanguageLearningApp.API.Services
             {
                 Console.WriteLine($"Error getting all users: {ex.Message}");
                 return new List<User>(); // Return an empty list if an error occurs
+            }
+        }
+
+        public async Task<User>? InitializeUser(string refreshToken)
+        {
+            try
+            {
+                // Check if RefreshToken is expired
+                var dbRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(r => r.Token == refreshToken);
+                if (dbRefreshToken == null || dbRefreshToken.Expires < DateTime.Now)
+                {
+                    return null;
+                }
+
+                var dbUser = await _dbContext.Users.FirstOrDefaultAsync(r => r.Id == dbRefreshToken.UserId);
+                return dbUser;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error checking email: {ex.Message}");
+                return null;
             }
         }
 

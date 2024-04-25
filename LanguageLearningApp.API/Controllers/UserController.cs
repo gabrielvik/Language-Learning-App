@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +20,31 @@ namespace LanguageLearningApp.API.Controllers
 
         public UserController(IConfiguration configuration, UserService userService)
         {
+            /*user.RefreshToken = new RefreshToken()
+            {
+                Id = 1,
+                Token = "asd",
+                Expires = DateTime.Now.AddDays(1),
+                Created = DateTime.Now.AddHours(-1),
+                UserId = 2
+            };*/
+
             _configuration = configuration;
             _userService = userService;
+        }
+
+        [NonAction]
+        public async Task InitializeAsync()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var dbUser = await _userService.InitializeUser(refreshToken);
+                if (dbUser != null)
+                {
+                    user = dbUser;
+                }
+            }
         }
 
         [HttpPost("login")]
@@ -52,7 +76,7 @@ namespace LanguageLearningApp.API.Controllers
             string token = CreateToken(user);
 
             var refreshToken = GenerateRefreshToken();
-            SetRefreshToken(refreshToken);
+            await SetRefreshToken(refreshToken);
 
             var cookieOptions = new CookieOptions
             {
@@ -80,6 +104,8 @@ namespace LanguageLearningApp.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<ActionResult<string>> RefreshToken()
         {
+            await InitializeAsync();
+
             var refreshToken = Request.Cookies["refreshToken"];
 
             if (!user.RefreshToken.Token.Equals(refreshToken))
@@ -93,12 +119,12 @@ namespace LanguageLearningApp.API.Controllers
 
             string token = CreateToken(user);
             var newRefreshToken = GenerateRefreshToken();
-            SetRefreshToken(newRefreshToken);
+            await SetRefreshToken(newRefreshToken);
 
             return Ok(token);
         }
 
-        private void SetRefreshToken(RefreshToken newRefreshToken)
+        private async Task SetRefreshToken(RefreshToken newRefreshToken)
         {
             var cookieOptions = new CookieOptions
             {
@@ -112,6 +138,8 @@ namespace LanguageLearningApp.API.Controllers
             user.RefreshToken.Token = newRefreshToken.Token;
             user.RefreshToken.Created = newRefreshToken.Created;
             user.RefreshToken.Expires = newRefreshToken.Expires;
+
+            await _userService.UpdateRefreshToken(user, user.RefreshToken);
         }
 
         private string CreateToken(User user)
@@ -170,7 +198,7 @@ namespace LanguageLearningApp.API.Controllers
             string token = CreateToken(user);
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
-            SetRefreshToken(refreshToken);
+            await SetRefreshToken(refreshToken);
 
             var userAdded = await _userService.AddUserAsync(user);
 
