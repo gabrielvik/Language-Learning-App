@@ -7,7 +7,7 @@ namespace LanguageLearningApp.API.Services
 {
     public class UserService
     {
-        private readonly LanguageAppContext _dbContext; // Inject your database context here
+        private readonly LanguageAppContext _dbContext; 
 
         public UserService(LanguageAppContext dbContext)
         {
@@ -38,9 +38,8 @@ namespace LanguageLearningApp.API.Services
             }
             catch (Exception ex)
             {
-                // Handle and log any exceptions
                 Console.WriteLine($"Error updating refresh token: {ex.Message}");
-                throw; // Rethrow the exception to propagate it upwards
+                throw; 
             }
         }
 
@@ -49,7 +48,6 @@ namespace LanguageLearningApp.API.Services
         {
             try
             {
-                // Create a new User entity
                 var newUser = new User
                 {
                     Username = user.Username,
@@ -59,16 +57,15 @@ namespace LanguageLearningApp.API.Services
                     RefreshToken = user.RefreshToken
                 };
 
-                // Add the user to the database
                 _dbContext.Users.Add(newUser);
                 await _dbContext.SaveChangesAsync();
 
-                return true; // User added successfully
+                return true; 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error adding user: {ex.Message}");
-                return false; // Failed to add user
+                return false; 
             }
         }
 
@@ -127,9 +124,8 @@ namespace LanguageLearningApp.API.Services
         {
             try
             {
-                // Check if any user has the provided email
                 var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
-                return user != null; // Returns true if email is already taken
+                return user != null;
             }
             catch (Exception ex)
             {

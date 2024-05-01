@@ -118,6 +118,7 @@ namespace LanguageLearningApp.API.Controllers
             }
 
             string token = CreateToken(user);
+            Response.Cookies.Append("accessToken", token);
             var newRefreshToken = GenerateRefreshToken();
             await SetRefreshToken(newRefreshToken);
 
