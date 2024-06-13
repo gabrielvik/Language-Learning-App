@@ -5,8 +5,6 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageLearningApp.API", "LanguageLearningApp.API\LanguageLearningApp.API.csproj", "{3A17C7A0-2BCC-48E7-9E3C-9FDD5FD0F09C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageLearningApp.UI", "LanguageLearningApp.UI\LanguageLearningApp.UI.csproj", "{A27A5C1E-C387-40FC-BEDA-03F8DD6CD2CB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LanguageLearningApp.Data", "LanguageLearningApp.Data\LanguageLearningApp.Data.csproj", "{12335531-024A-48A7-A59B-BA6C7C23F03A}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{3A17C7A0-2BCC-48E7-9E3C-9FDD5FD0F09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A17C7A0-2BCC-48E7-9E3C-9FDD5FD0F09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A17C7A0-2BCC-48E7-9E3C-9FDD5FD0F09C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A27A5C1E-C387-40FC-BEDA-03F8DD6CD2CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A27A5C1E-C387-40FC-BEDA-03F8DD6CD2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A27A5C1E-C387-40FC-BEDA-03F8DD6CD2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A27A5C1E-C387-40FC-BEDA-03F8DD6CD2CB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{12335531-024A-48A7-A59B-BA6C7C23F03A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12335531-024A-48A7-A59B-BA6C7C23F03A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12335531-024A-48A7-A59B-BA6C7C23F03A}.Release|Any CPU.ActiveCfg = Release|Any CPU
