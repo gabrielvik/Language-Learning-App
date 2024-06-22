@@ -22,6 +22,7 @@ export default function Login() {
     const handleChange = (e) => {
         const { id, value } = e.target;
         setForm({ ...form, [id]: value });
+        setRegistrationSuccess(false); // Hide success message when form is edited
     };
 
     const handleSubmit = async (e) => {
@@ -47,7 +48,7 @@ export default function Login() {
                 if (error.response && error.response.status === 400) {
                     setServerErrors(error.response.data);
                 } else {
-                    alert('Registration failed.');
+
                 }
             }
         }

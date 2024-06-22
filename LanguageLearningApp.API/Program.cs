@@ -52,14 +52,6 @@ namespace LanguageLearningApp.API
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("LanguageAppConnection")));
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => builder.WithOrigins("http://localhost:3000")
-                                      .AllowAnyHeader()
-                                      .AllowAnyMethod());
-            });
-
             builder.Services.AddControllers();
 
             builder.Services.AddControllers();
@@ -77,7 +69,8 @@ namespace LanguageLearningApp.API
 
 
             var app = builder.Build();
-
+            app.UseCors("AllowSpecificOrigin");
+            app.UseRouting();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
