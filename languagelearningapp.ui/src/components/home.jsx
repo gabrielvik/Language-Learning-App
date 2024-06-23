@@ -1,6 +1,13 @@
 import React from 'react';
+import { userService } from '../services/userService';
 
 export default function Home(){
+    const _userService = new userService("https://localhost:7134/api/User");
+    console.log(_userService.userIsLoggedIn())
+    if(_userService.userIsLoggedIn()){
+      _userService.getUserInfo();
+    }
+
     return (
         <div class="container px-4 py-4" id="home">
         <div class="bg-body-tertiary p-5 rounded">
