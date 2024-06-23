@@ -20,31 +20,8 @@ namespace LanguageLearningApp.API.Controllers
 
         public UserController(IConfiguration configuration, UserService userService)
         {
-            /*user.RefreshToken = new RefreshToken()
-            {
-                Id = 1,
-                Token = "asd",
-                Expires = DateTime.Now.AddDays(1),
-                Created = DateTime.Now.AddHours(-1),
-                UserId = 2
-            };*/
-
             _configuration = configuration;
             _userService = userService;
-        }
-
-        [NonAction]
-        public async Task InitializeAsync()
-        {
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                var dbUser = await _userService.InitializeUser(refreshToken);
-                if (dbUser != null)
-                {
-                    user = dbUser;
-                }
-            }
         }
 
         [HttpPost("login")]
@@ -54,11 +31,6 @@ namespace LanguageLearningApp.API.Controllers
                 return BadRequest(ModelState);
 
             var getUser = await _userService.GetUserAsync(model.Username);
-            if (getUser == null)
-            {
-                ModelState.AddModelError("Username", "Invalid username or password.");
-                return BadRequest(ModelState);
-            }
             if (getUser == null)
             {
                 ModelState.AddModelError("Username", "Invalid username or password.");
@@ -75,72 +47,19 @@ namespace LanguageLearningApp.API.Controllers
 
             string token = CreateToken(user);
 
-            var refreshToken = GenerateRefreshToken();
-            await SetRefreshToken(refreshToken);
-
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(1)
+                Expires = DateTime.UtcNow.AddDays(1),
+                SameSite = SameSiteMode.Strict,
+                Secure = true
             };
 
-            Response.Cookies.Append("accessToken", token);
+            // Set access token as cookie
+            Response.Cookies.Append("accessToken", token, cookieOptions);
 
-            return Ok(token);
-        }
-
-        private RefreshToken GenerateRefreshToken()
-        {
-            var refreshToken = new RefreshToken
-            {
-                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                Expires = DateTime.Now.AddDays(7),
-                Created = DateTime.Now
-            };
-
-            return refreshToken;
-        }
-
-        [HttpPost("refresh-token")]
-        public async Task<ActionResult<string>> RefreshToken()
-        {
-            await InitializeAsync();
-
-            var refreshToken = Request.Cookies["refreshToken"];
-
-            if (!user.RefreshToken.Token.Equals(refreshToken))
-            {
-                return Unauthorized("Invalid Refresh Token.");
-            }
-            else if (user.RefreshToken.Expires < DateTime.Now)
-            {
-                return Unauthorized("Token expired.");
-            }
-
-            string token = CreateToken(user);
-            Response.Cookies.Append("accessToken", token);
-            var newRefreshToken = GenerateRefreshToken();
-            await SetRefreshToken(newRefreshToken);
-
-            return Ok(token);
-        }
-
-        private async Task SetRefreshToken(RefreshToken newRefreshToken)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = newRefreshToken.Expires
-            };
-            Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-
-            user.RefreshToken = new RefreshToken();
-
-            user.RefreshToken.Token = newRefreshToken.Token;
-            user.RefreshToken.Created = newRefreshToken.Created;
-            user.RefreshToken.Expires = newRefreshToken.Expires;
-
-            await _userService.UpdateRefreshToken(user, user.RefreshToken);
+            // Return the access token as part of the response body (optional)
+            return Ok(new { AccessToken = token });
         }
 
         private string CreateToken(User user)
@@ -184,7 +103,7 @@ namespace LanguageLearningApp.API.Controllers
                 ModelState.AddModelError("Email", "Email is already taken.");
 
             if (!IsValidPassword(model.Password))
-                ModelState.AddModelError("Password", "Password must be at least 8 characthers and 1 special characther.");
+                ModelState.AddModelError("Password", "Password must be at least 8 characters and contain 1 special character.");
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -197,13 +116,21 @@ namespace LanguageLearningApp.API.Controllers
             user.PasswordSalt = passwordSalt;
 
             string token = CreateToken(user);
-            var refreshToken = GenerateRefreshToken();
-            user.RefreshToken = refreshToken;
-            await SetRefreshToken(refreshToken);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(1),
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            };
+
+            // Set access token as cookie
+            Response.Cookies.Append("accessToken", token, cookieOptions);
 
             var userAdded = await _userService.AddUserAsync(user);
 
-            if(userAdded)
+            if (userAdded)
                 return Ok(user);
             else
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to add user.");
@@ -213,7 +140,6 @@ namespace LanguageLearningApp.API.Controllers
         [HttpGet("email")]
         public IActionResult GetUserEmail()
         {
-            // Retrieve the user's claims from the HttpContext
             var usernameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
             var emailClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
 
@@ -227,7 +153,6 @@ namespace LanguageLearningApp.API.Controllers
 
             return BadRequest("User information not found.");
         }
-
 
         private static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
         private static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) && username.Length > 5 && username.Length < 20;
