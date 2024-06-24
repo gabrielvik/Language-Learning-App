@@ -49,9 +49,9 @@ namespace LanguageLearningApp.API.Controllers
 
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true,
+                HttpOnly = false,
                 Expires = DateTime.UtcNow.AddDays(1),
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = true
             };
 
@@ -119,9 +119,9 @@ namespace LanguageLearningApp.API.Controllers
 
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true,
+                HttpOnly = false,
                 Expires = DateTime.UtcNow.AddDays(1),
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = true
             };
 
