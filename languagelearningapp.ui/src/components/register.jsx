@@ -27,19 +27,20 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const newErrors = {
             username: form.username === '',
             userEmail: form.userEmail === '',
             userPassword: form.userPassword === '',
             confirmPassword: form.confirmPassword !== form.userPassword
         };
-
+    
         setErrors(newErrors);
         setServerErrors({});
-
+        setRegistrationSuccess(false); // Ensure the success message is hidden on form submission
+    
         const noErrors = !Object.values(newErrors).some(error => error);
-
+    
         if (noErrors) {
             try {
                 await _userService.register(form.username, form.userEmail, form.userPassword);
@@ -48,11 +49,12 @@ export default function Login() {
                 if (error.response && error.response.status === 400) {
                     setServerErrors(error.response.data);
                 } else {
-
+                    console.error("An unexpected error occurred:", error);
                 }
             }
         }
     };
+      
 
     return (
         <div className="container px-4 py-4" id="register">

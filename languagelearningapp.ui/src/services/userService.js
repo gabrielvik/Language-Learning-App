@@ -37,7 +37,7 @@ export class userService {
                 throw { response: { status: res.status, data: errorData } };
             }
 
-            console.log(`\n${method} Request successful @ ${url}`);
+            //console.log(`\n${method} Request successful @ ${url}`);
 
             // Ensure response is not empty before attempting to parse as JSON
             if (res.status === 204 || res.headers.get('Content-Length') === '0') {
@@ -53,7 +53,7 @@ export class userService {
             }
         } catch (err) {
             console.error(`Failed to receive data from server:`, err);
-            // throw err;
+            throw err;
         }
     }
 
@@ -86,10 +86,12 @@ export class userService {
     }
 
     async getUserInfo() {
-        const url = `${this.url}/email`;
-        
-        const userInfo = await this.#_myFetch(url, 'GET');
+        if(!this.userIsLoggedIn()){
+            return null;
+        }
 
+        const url = `${this.url}/email`;
+        const userInfo = await this.#_myFetch(url, 'GET');
         return userInfo
     }
 }
