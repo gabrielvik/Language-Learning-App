@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Cookies from 'js-cookie';
 
-export class userService {
+export class languageAppService {
     constructor(baseUrl) {
         this.url = baseUrl;
     }
@@ -58,7 +58,7 @@ export class userService {
     }
 
     async register(username, email, password) {
-        const url = `${this.url}/register`;
+        const url = `${this.url}/User/register`;
         const body = {
             username: username,
             email: email,
@@ -69,7 +69,7 @@ export class userService {
     }
 
     async login(username, password) {
-        const url = `${this.url}/login`;
+        const url = `${this.url}/User/login`;
         const body = {
             username: username,
             password: password
@@ -90,8 +90,14 @@ export class userService {
             return null;
         }
 
-        const url = `${this.url}/email`;
+        const url = `${this.url}/User/email`;
         const userInfo = await this.#_myFetch(url, 'GET');
         return userInfo
+    } 
+
+    async getLessonInfo(id){
+        const url = `${this.url}/Lessons/lesson?id=${id}`;
+        
+        return await this.#_myFetch(url, 'GET');
     }
 }

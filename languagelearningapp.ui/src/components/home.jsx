@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { userService } from '../services/userService';
+import { languageAppService } from '../services/languageAppService';
 import { Link } from 'react-router-dom';
 
 export default function Home() {
     const [userInfo, setUserInfo] = useState(null);
-    const _userService = new userService("https://localhost:7134/api/User");
+    const _languageAppService = new languageAppService("https://localhost:7134/api");
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const fetchedUserInfo = await _userService.getUserInfo();
+            const fetchedUserInfo = await _languageAppService.getUserInfo();
             setUserInfo(fetchedUserInfo);
         };
 

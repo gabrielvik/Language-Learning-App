@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { userService } from '../services/userService';
+import { languageAppService } from '../services/languageAppService';
 import '../css/lessons.css';
 
 export default function Lessons() {
-    const _userService = new userService("https://localhost:7134/api/User");
+    const _languageAppService = new languageAppService("https://localhost:7134/api");
     const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
-            const fetchedUserInfo = await _userService.getUserInfo();
+            const fetchedUserInfo = await _languageAppService.getUserInfo();
             setUserInfo(fetchedUserInfo);
         };
 

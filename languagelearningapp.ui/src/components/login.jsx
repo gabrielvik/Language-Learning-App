@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { userService } from '../services/userService';
+import { languageAppService } from '../services/languageAppService';
 
 export default function Login() {
-    const _userService = new userService("https://localhost:7134/api/User");
+    const _languageAppService = new languageAppService("https://localhost:7134/api");
 
     const [form, setForm] = useState({
         username: '',
@@ -36,7 +36,7 @@ export default function Login() {
 
         if (noErrors) {
             try {
-                await _userService.login(form.username, form.userPassword);
+                await _languageAppService.login(form.username, form.userPassword);
                 setLoginSuccess(true);
             } catch (error) {
                 if (error.response && error.response.status === 400) {
