@@ -100,4 +100,16 @@ export class languageAppService {
         
         return await this.#_myFetch(url, 'GET');
     }
+
+    async evaluateResponse(lessonId, stageId, promptId, userResponse) {
+        const url = `${this.url}/Lessons/evaluate`;
+        const body = {
+            lessonId: lessonId,
+            stageId: stageId,
+            promptId: promptId,
+            userResponse: userResponse
+        };
+        
+        return await this.#_myFetch(url, 'POST', body);
+    }
 }
