@@ -1,48 +1,19 @@
 ﻿using Azure.Core;
 using LanguageLearningApp.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace LanguageLearningApp.API.Services
 {
     public class UserService
     {
-        private readonly LanguageAppContext _dbContext; 
+        private readonly LanguageAppContext _dbContext;
 
         public UserService(LanguageAppContext dbContext)
         {
             _dbContext = dbContext;
         }
-
-        public async Task<bool> UpdateRefreshToken(User user, RefreshToken refreshToken)
-        {
-            try
-            {
-                var dbUser = await _dbContext.Users
-                    .Include(u => u.RefreshToken)
-                    .FirstOrDefaultAsync(u => u.Id == user.Id);
-
-                if (dbUser != null)
-                {
-                    // Update the RefreshToken properties
-                    dbUser.RefreshToken = refreshToken;
-
-                    await _dbContext.SaveChangesAsync();
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating refresh token: {ex.Message}");
-                throw; 
-            }
-        }
-
 
         public async Task<bool> AddUserAsync(User user)
         {
@@ -54,18 +25,17 @@ namespace LanguageLearningApp.API.Services
                     Email = user.Email,
                     PasswordHash = user.PasswordHash,
                     PasswordSalt = user.PasswordSalt,
-                    RefreshToken = user.RefreshToken
                 };
 
                 _dbContext.Users.Add(newUser);
                 await _dbContext.SaveChangesAsync();
 
-                return true; 
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error adding user: {ex.Message}");
-                return false; 
+                return false;
             }
         }
 
@@ -99,27 +69,6 @@ namespace LanguageLearningApp.API.Services
             }
         }
 
-        public async Task<User>? InitializeUser(string refreshToken)
-        {
-            try
-            {
-                // Check if RefreshToken is expired
-                var dbRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(r => r.Token == refreshToken);
-                if (dbRefreshToken == null || dbRefreshToken.Expires < DateTime.Now)
-                {
-                    return null;
-                }
-
-                var dbUser = await _dbContext.Users.FirstOrDefaultAsync(r => r.Id == dbRefreshToken.UserId);
-                return dbUser;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error checking email: {ex.Message}");
-                return null;
-            }
-        }
-
         public async Task<bool> IsEmailTakenAsync(string email)
         {
             try
@@ -139,12 +88,41 @@ namespace LanguageLearningApp.API.Services
             try
             {
                 var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
-                return user != null; 
+                return user != null;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error checking username: {ex.Message}");
-                return true; 
+                return true;
+            }
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            try
+            {
+                var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+                if (existingUser != null)
+                {
+                    // Update the user properties
+                    existingUser.Username = user.Username;
+                    existingUser.Email = user.Email;
+                    existingUser.LearningLanguage = user.LearningLanguage;
+                    existingUser.PasswordHash = user.PasswordHash;
+                    existingUser.PasswordSalt = user.PasswordSalt;
+
+                    // Save changes to the database
+                    _dbContext.Users.Update(existingUser);
+                    await _dbContext.SaveChangesAsync();
+
+                    return true;
+                }
+                return false; // User not found
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating user: {ex.Message}");
+                return false;
             }
         }
     }
