@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { languageAppService } from '../services/languageAppService';
 import '../css/lessons.css';
 
 export default function Lessons() {
-    const _languageAppService = new languageAppService("https://localhost:7134/api");
     const [userInfo, setUserInfo] = useState(null);
+    const _languageAppService = new languageAppService("https://localhost:7134/api");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             const fetchedUserInfo = await _languageAppService.getUserInfo();
-            setUserInfo(fetchedUserInfo);
+            if (fetchedUserInfo && !fetchedUserInfo.learningLanguage) {
+                navigate('/changelanguage');
+            } else {
+                setUserInfo(fetchedUserInfo);
+            }
         };
 
         fetchUserInfo();
@@ -21,7 +26,11 @@ export default function Lessons() {
         { id: 2, title: "Food" },
         { id: 3, title: "Numbers" },
     ];
-            
+
+    if (!userInfo) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="container mt-4">
             <h2 className="mb-4 text-center">Progression Ladder</h2>

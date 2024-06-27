@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import Cookies from 'js-cookie';
 
 export class languageAppService {
@@ -26,7 +25,7 @@ export class languageAppService {
                 headers: headers,
                 body: body ? JSON.stringify(body) : null
             });
-
+    
             if (!res.ok) {
                 let errorData;
                 try {
@@ -36,17 +35,18 @@ export class languageAppService {
                 }
                 throw { response: { status: res.status, data: errorData } };
             }
-
-            //console.log(`\n${method} Request successful @ ${url}`);
-
+    
             // Ensure response is not empty before attempting to parse as JSON
             if (res.status === 204 || res.headers.get('Content-Length') === '0') {
                 return null;
             }
-
+    
             const contentType = res.headers.get('Content-Type');
             if (contentType && contentType.indexOf('application/json') !== -1) {
                 let data = await res.json();
+                return data;
+            } else if (contentType && contentType.indexOf('text/plain') !== -1) {
+                let data = await res.text();
                 return data;
             } else {
                 return null;
@@ -79,25 +79,25 @@ export class languageAppService {
     }
 
     userIsLoggedIn(){
-        if(Cookies.get('accessToken')) {
-            return true;
-        }
-        return false;
+        return Cookies.get('accessToken') != null;
+    }
+
+    logout() {
+        Cookies.remove('accessToken');
     }
 
     async getUserInfo() {
-        if(!this.userIsLoggedIn()){
+        if (!this.userIsLoggedIn()) {
             return null;
         }
 
-        const url = `${this.url}/User/email`;
+        const url = `${this.url}/User/userInfo`;
         const userInfo = await this.#_myFetch(url, 'GET');
-        return userInfo
-    } 
+        return userInfo;
+    }
 
-    async getLessonInfo(id){
+    async getLessonInfo(id) {
         const url = `${this.url}/Lessons/lesson?id=${id}`;
-        
         return await this.#_myFetch(url, 'GET');
     }
 
@@ -109,7 +109,13 @@ export class languageAppService {
             promptId: promptId,
             userResponse: userResponse
         };
-        
         return await this.#_myFetch(url, 'POST', body);
+    }
+
+    async updateLearningLanguage(language) {
+        const url = `${this.url}/User/updateLearningLanguage`;
+        const body = { learningLanguage: language };
+        const updatedUserInfo = await this.#_myFetch(url, 'POST', body);
+        return updatedUserInfo;
     }
 }

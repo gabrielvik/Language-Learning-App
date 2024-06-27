@@ -42,6 +42,7 @@ export default function Lesson() {
         const promptId = currentPromptIndex;
 
         const response = await _languageAppService.evaluateResponse(lessonId, stageId, promptId, userResponse);
+        console.log(response)
         setFeedback(response);
     };
 

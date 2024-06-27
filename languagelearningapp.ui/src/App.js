@@ -9,6 +9,7 @@ import Register from './components/register';
 import Login from './components/login';
 import Lessons from './components/lessons';
 import Lesson from './components/lesson';
+import ChangeLanguage from './components/changelanguage'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/changelanguage" element={<ChangeLanguage />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/lesson/:lessonId" element={<Lesson />} />
         </Routes>
