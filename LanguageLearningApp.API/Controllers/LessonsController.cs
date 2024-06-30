@@ -3,6 +3,9 @@ using LanguageLearningApp.Data.Entities;
 using OpenAI_API;
 using System.Threading.Tasks;
 using OpenAI_API.Chat;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using LanguageLearningApp.API.Services;
 
 namespace LanguageLearningApp.API.Controllers
 {
@@ -10,11 +13,13 @@ namespace LanguageLearningApp.API.Controllers
     [ApiController]
     public class LessonsController : ControllerBase
     {
+        private readonly UserService _userService;
         private readonly OpenAIAPI _openAiApi;
 
-        public LessonsController()
+        public LessonsController(UserService userService)
         {
             _openAiApi = new OpenAIAPI("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");
+            _userService = userService;
         }
 
         [HttpGet("lesson")]
@@ -30,10 +35,12 @@ namespace LanguageLearningApp.API.Controllers
             return BadRequest("Lesson not found.");
         }
 
+        [Authorize]
         [HttpPost("evaluate")]
-        public async Task<IActionResult> EvaluateResponse(EvaluationDTO request)
+        public async Task<IActionResult> EvaluateResponse([FromBody] EvaluationDTO request)
         {
             var lessons = Lessons.GetLesson(request.LessonId);
+            var usernameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
 
             if (lessons == null)
             {
@@ -54,32 +61,38 @@ namespace LanguageLearningApp.API.Controllers
 
             var prompt = stage.Prompt[request.PromptId];
 
-            var apiResult = await _openAiApi.Chat.CreateChatCompletionAsync(
-                new ChatRequest
+            if (usernameClaim != null)
+            {
+                string username = usernameClaim.Value;
+                var user = await _userService.GetUserAsync(username);
+                if (user == null)
                 {
-                    Model = "gpt-3.5-turbo-0125",
-                    Messages = new[]
+                    return BadRequest("User information not found.");
+                }
+
+                var learningLanguage = user.LearningLanguage;
+                Console.WriteLine(learningLanguage);
+                var apiResult = await _openAiApi.Chat.CreateChatCompletionAsync(
+                    new ChatRequest
                     {
-                        new ChatMessage
+                        Model = "gpt-3.5-turbo-0125",
+                        Messages = new[]
                         {
-                            Role = ChatMessageRole.System,
-                            Content = $"Evaluate the user's response: '{request.UserResponse}' to the prompt: '{prompt}'"
-                        }
+                    new ChatMessage
+                    {
+                        Role = ChatMessageRole.System,
+                        Content = $"Evaluate the user's response: '{request.UserResponse}' to the prompt: '{prompt}' in the context of learning the language: '{learningLanguage}'. Your response should be a short feedback response, respond shortly what can be improved with regard to spelling and grammatical rules of the language, explain why something is correct or incorrect, etc."
                     }
-                });
+                        }
+                    });
 
-            // Assuming the response contains the evaluation result directly
-            var evaluationResult = apiResult.Choices[0].Message.Content;
+                var evaluationResult = apiResult.Choices[0].Message.Content;
 
-            return Ok(evaluationResult);
+                return Ok(evaluationResult);
+            }
+
+            return BadRequest("User information not found.");
         }
-    }
 
-    public class EvaluationDTO
-    {
-        public int LessonId { get; set; }
-        public int StageId { get; set; }
-        public int PromptId { get; set; }
-        public string UserResponse { get; set; }
     }
 }

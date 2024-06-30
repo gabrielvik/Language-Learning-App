@@ -14,7 +14,6 @@ namespace LanguageLearningApp.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        public static User user = new User();
         private readonly UserService _userService;
         private readonly IConfiguration _configuration;
 
@@ -43,9 +42,7 @@ namespace LanguageLearningApp.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            user = getUser;
-
-            string token = CreateToken(user);
+            string token = CreateToken(getUser);
 
             var cookieOptions = new CookieOptions
             {
@@ -110,10 +107,13 @@ namespace LanguageLearningApp.API.Controllers
 
             CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            user.Username = model.Username;
-            user.Email = model.Email;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            var user = new User
+            {
+                Username = model.Username,
+                Email = model.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
 
             string token = CreateToken(user);
 
@@ -137,22 +137,59 @@ namespace LanguageLearningApp.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("email")]
-        public IActionResult GetUserEmail()
+        [HttpGet("userInfo")]
+        public async Task<IActionResult> GetUserInfo()
         {
             var usernameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-            var emailClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
 
-            if (usernameClaim != null && emailClaim != null)
+            if (usernameClaim != null)
             {
                 string username = usernameClaim.Value;
-                string email = emailClaim.Value;
 
-                return Ok(new { Username = username, Email = email });
+                var user = await _userService.GetUserAsync(username);
+                if (user != null)
+                {
+                    return Ok(new
+                    {
+                        user.Username,
+                        user.Email,
+                        user.LearningLanguage
+                    });
+                }
             }
 
             return BadRequest("User information not found.");
         }
+
+        [Authorize]
+        [HttpPost("updateLearningLanguage")]
+        public async Task<IActionResult> UpdateLearningLanguage([FromBody] UpdateLearningLanguageDTO model)
+        {
+            var usernameClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+            if (usernameClaim != null)
+            {
+                string username = usernameClaim.Value;
+                var user = await _userService.GetUserAsync(username);
+                if (user != null)
+                {
+                    user.LearningLanguage = model.LearningLanguage;
+                    var updateResult = await _userService.UpdateUserAsync(user);
+
+                    if (updateResult)
+                    {
+                        return Ok(user);
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update learning language.");
+                    }
+                }
+            }
+
+            return BadRequest("User information not found.");
+        }
+
 
         private static bool IsValidEmail(string email) => email.Contains("@") && email.Contains(".");
         private static bool IsValidUsername(string username) => !string.IsNullOrEmpty(username) && username.Length > 5 && username.Length < 20;
