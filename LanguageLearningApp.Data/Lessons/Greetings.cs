@@ -37,7 +37,7 @@ namespace LanguageLearningApp.Data.Lessons
                 "Where are you from?",
                 "How old are you?",
                 "What do you do?",
-                "Do you speak [Language]?"
+                "Do you speak [Any Language]?"
             }));
 
             greetings.Add(new Lesson("Responding to Questions", new List<string>
@@ -46,8 +46,8 @@ namespace LanguageLearningApp.Data.Lessons
                 "I am from [Your Country]",
                 "I am [Your Age] years old",
                 "I am a [Your Profession]",
-                "Yes, I speak [Language]",
-                "No, I don't speak [Language]"
+                "Yes, I speak [Any Language]",
+                "No, I don't speak [Any Language]"
             }));
         }
     }
