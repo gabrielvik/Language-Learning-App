@@ -42,7 +42,7 @@ export default function Lesson() {
         const promptId = currentPromptIndex;
 
         const response = await _languageAppService.evaluateResponse(lessonId, stageId, promptId, userResponse);
-        console.log(response)
+        console.log(response);
         setFeedback(response);
     };
 
@@ -86,6 +86,7 @@ export default function Lesson() {
                         </form>
                     ) : (
                         <div>
+                            <p>Your response: {userResponse}</p>
                             <p>Feedback: {feedback}</p>
                             {currentPromptIndex < lessonInfo.find(lesson => lesson.name === selectedLessonType).prompt.length - 1 ? (
                                 <button onClick={handleNextPrompt}>Next</button>
