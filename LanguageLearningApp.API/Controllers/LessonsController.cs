@@ -34,7 +34,6 @@ namespace LanguageLearningApp.API.Controllers
 
             return BadRequest("Lesson not found.");
         }
-
         [Authorize]
         [HttpPost("evaluate")]
         public async Task<IActionResult> EvaluateResponse([FromBody] EvaluationDTO request)
@@ -59,40 +58,50 @@ namespace LanguageLearningApp.API.Controllers
                 return BadRequest("Invalid prompt ID.");
             }
 
-            var prompt = stage.Prompt[request.PromptId];
-
-            if (usernameClaim != null)
+            if (usernameClaim == null)
             {
-                string username = usernameClaim.Value;
-                var user = await _userService.GetUserAsync(username);
-                if (user == null)
-                {
-                    return BadRequest("User information not found.");
-                }
-
-                var learningLanguage = user.LearningLanguage;
-                Console.WriteLine(learningLanguage);
-                var apiResult = await _openAiApi.Chat.CreateChatCompletionAsync(
-                    new ChatRequest
-                    {
-                        Model = "gpt-3.5-turbo-0125",
-                        Messages = new[]
-                        {
-                    new ChatMessage
-                    {
-                        Role = ChatMessageRole.System,
-                        Content = $"Evaluate the user's response: '{request.UserResponse}' to the prompt: '{prompt}' in the context of learning the language: '{learningLanguage}'. Your response should be a short feedback response, respond shortly what can be improved with regard to spelling and grammatical rules of the language, explain why something is correct or incorrect, etc."
-                    }
-                        }
-                    });
-
-                var evaluationResult = apiResult.Choices[0].Message.Content;
-
-                return Ok(evaluationResult);
+                return BadRequest("User information not found.");
             }
 
-            return BadRequest("User information not found.");
+            string username = usernameClaim.Value;
+            var user = await _userService.GetUserAsync(username);
+            if (user == null)
+            {
+                return BadRequest("User information not found.");
+            }
+
+            // Check if the user has completed the last prompt in the last stage
+            if (request.PromptId+1 == stage.Prompt.Count)
+            {
+                // User has completed all prompts in the lesson
+                user.AddCompletedLesson(request.LessonId, request.PromptId);
+
+                // Save changes to the database
+                await _userService.UpdateUserAsync(user);
+            }
+
+            var prompt = stage.Prompt[request.PromptId];
+
+            var learningLanguage = user.LearningLanguage;
+            var apiResult = await _openAiApi.Chat.CreateChatCompletionAsync(
+                new ChatRequest
+                {
+                    Model = "gpt-4o-mini",
+                    Messages = new[]
+                    {
+                new ChatMessage
+                {
+                    Role = ChatMessageRole.System,
+                    Content = $"Evaluate the response: '{request.UserResponse}' to the prompt: '{prompt}' in the context of learning the language: '{learningLanguage}'. Your response should be a short feedback response, respond shortly what can be improved with regard to spelling and grammatical rules of the language, explain why something is correct or incorrect, etc. The response must be a translation of the prompt, and nothing else."
+                }
+                    }
+                });
+
+            var evaluationResult = apiResult.Choices[0].Message.Content;
+
+            return Ok(evaluationResult);
         }
+
 
     }
 }

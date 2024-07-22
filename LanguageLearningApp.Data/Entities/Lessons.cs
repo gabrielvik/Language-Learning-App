@@ -13,7 +13,7 @@ namespace LanguageLearningApp.Data.Entities
 
         private static void InitializeLessons()
         {
-            lessons.Add(1, Greetings.greetings);
+            lessons.Add(0, Greetings.greetings);
         }
 
         public static List<Lesson>? GetLesson(int id)

@@ -110,6 +110,7 @@ namespace LanguageLearningApp.API.Services
                     existingUser.LearningLanguage = user.LearningLanguage;
                     existingUser.PasswordHash = user.PasswordHash;
                     existingUser.PasswordSalt = user.PasswordSalt;
+                    existingUser.LearnedLessonsJson = user.LearnedLessonsJson;
 
                     // Save changes to the database
                     _dbContext.Users.Update(existingUser);

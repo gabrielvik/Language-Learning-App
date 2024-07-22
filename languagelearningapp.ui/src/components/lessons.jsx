@@ -22,9 +22,9 @@ export default function Lessons() {
     }, []);
 
     const stages = [
-        { id: 1, title: "Greetings" },
-        { id: 2, title: "Food" },
-        { id: 3, title: "Numbers" },
+        { id: 0, title: "Greetings" },
+        { id: 1, title: "Food" },
+        { id: 2, title: "Numbers" },
     ];
 
     if (!userInfo) {

@@ -1,4 +1,8 @@
-﻿namespace LanguageLearningApp.Data.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
+
+namespace LanguageLearningApp.Data.Entities
 {
     public class User
     {
@@ -6,7 +10,29 @@
         public string Username { get; set; }
         public string Email { get; set; }
         public string? LearningLanguage { get; set; }
+        public string? LearnedLessonsJson { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+
+        public void AddCompletedLesson(int lessonId, int promptId)
+        {
+            var learnedLessons = string.IsNullOrEmpty(LearnedLessonsJson)
+                ? new Dictionary<int, List<int>>()
+                : JsonSerializer.Deserialize<Dictionary<int, List<int>>>(LearnedLessonsJson);
+
+            if (learnedLessons.ContainsKey(lessonId))
+            {
+                if (!learnedLessons[lessonId].Contains(promptId))
+                {
+                    learnedLessons[lessonId].Add(promptId);
+                }
+            }
+            else
+            {
+                learnedLessons[lessonId] = new List<int> { promptId };
+            }
+
+            LearnedLessonsJson = JsonSerializer.Serialize(learnedLessons);
+        }
     }
 }

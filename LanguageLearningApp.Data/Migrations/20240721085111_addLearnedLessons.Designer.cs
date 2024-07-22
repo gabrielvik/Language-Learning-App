@@ -3,6 +3,7 @@ using LanguageLearningApp.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LanguageLearningApp.Data.Migrations
 {
     [DbContext(typeof(LanguageAppContext))]
-    partial class LanguageAppContextModelSnapshot : ModelSnapshot
+    [Migration("20240721085111_addLearnedLessons")]
+    partial class addLearnedLessons
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
