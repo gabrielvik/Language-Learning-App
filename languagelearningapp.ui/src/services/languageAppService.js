@@ -90,11 +90,17 @@ export class languageAppService {
         if (!this.userIsLoggedIn()) {
             return null;
         }
-
+    
         const url = `${this.url}/User/userInfo`;
         const userInfo = await this.#_myFetch(url, 'GET');
+        
+        if (userInfo && userInfo.LearnedLessonsJson) {
+            userInfo.LearnedLessonsJson = JSON.parse(userInfo.LearnedLessonsJson);
+        }
+        console.log(userInfo)
         return userInfo;
     }
+    
 
     async getLessonInfo(id) {
         const url = `${this.url}/Lessons/lesson?id=${id}`;

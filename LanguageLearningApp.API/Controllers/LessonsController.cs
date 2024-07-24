@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using LanguageLearningApp.Data.Entities;
 using OpenAI_API;
-using System.Threading.Tasks;
 using OpenAI_API.Chat;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using LanguageLearningApp.API.Services;
 
 namespace LanguageLearningApp.API.Controllers
 {
@@ -70,13 +67,9 @@ namespace LanguageLearningApp.API.Controllers
                 return BadRequest("User information not found.");
             }
 
-            // Check if the user has completed the last prompt in the last stage
             if (request.PromptId+1 == stage.Prompt.Count)
             {
-                // User has completed all prompts in the lesson
-                user.AddCompletedLesson(request.LessonId, request.PromptId);
-
-                // Save changes to the database
+                user.AddCompletedLesson(request.LessonId, request.StageId);
                 await _userService.UpdateUserAsync(user);
             }
 

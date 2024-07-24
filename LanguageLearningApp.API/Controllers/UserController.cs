@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace LanguageLearningApp.API.Controllers
 {
@@ -52,10 +53,7 @@ namespace LanguageLearningApp.API.Controllers
                 Secure = true
             };
 
-            // Set access token as cookie
             Response.Cookies.Append("accessToken", token, cookieOptions);
-
-            // Return the access token as part of the response body (optional)
             return Ok(new { AccessToken = token });
         }
 
@@ -125,7 +123,6 @@ namespace LanguageLearningApp.API.Controllers
                 Secure = true
             };
 
-            // Set access token as cookie
             Response.Cookies.Append("accessToken", token, cookieOptions);
 
             var userAdded = await _userService.AddUserAsync(user);
@@ -153,7 +150,10 @@ namespace LanguageLearningApp.API.Controllers
                     {
                         user.Username,
                         user.Email,
-                        user.LearningLanguage
+                        user.LearningLanguage,
+                        LearnedLessons = user.LearnedLessonsJson != null
+                            ? JsonSerializer.Deserialize<Dictionary<int, List<int>>>(user.LearnedLessonsJson)
+                            : null
                     });
                 }
             }

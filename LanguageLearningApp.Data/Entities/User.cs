@@ -14,7 +14,7 @@ namespace LanguageLearningApp.Data.Entities
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
-        public void AddCompletedLesson(int lessonId, int promptId)
+        public void AddCompletedLesson(int lessonId, int stageId)
         {
             var learnedLessons = string.IsNullOrEmpty(LearnedLessonsJson)
                 ? new Dictionary<int, List<int>>()
@@ -22,14 +22,14 @@ namespace LanguageLearningApp.Data.Entities
 
             if (learnedLessons.ContainsKey(lessonId))
             {
-                if (!learnedLessons[lessonId].Contains(promptId))
+                if (!learnedLessons[lessonId].Contains(stageId))
                 {
-                    learnedLessons[lessonId].Add(promptId);
+                    learnedLessons[lessonId].Add(stageId);
                 }
             }
             else
             {
-                learnedLessons[lessonId] = new List<int> { promptId };
+                learnedLessons[lessonId] = new List<int> { stageId };
             }
 
             LearnedLessonsJson = JsonSerializer.Serialize(learnedLessons);

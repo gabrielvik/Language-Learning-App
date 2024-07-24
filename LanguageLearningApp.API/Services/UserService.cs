@@ -104,7 +104,6 @@ namespace LanguageLearningApp.API.Services
                 var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
                 if (existingUser != null)
                 {
-                    // Update the user properties
                     existingUser.Username = user.Username;
                     existingUser.Email = user.Email;
                     existingUser.LearningLanguage = user.LearningLanguage;
@@ -112,7 +111,6 @@ namespace LanguageLearningApp.API.Services
                     existingUser.PasswordSalt = user.PasswordSalt;
                     existingUser.LearnedLessonsJson = user.LearnedLessonsJson;
 
-                    // Save changes to the database
                     _dbContext.Users.Update(existingUser);
                     await _dbContext.SaveChangesAsync();
 

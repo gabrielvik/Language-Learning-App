@@ -9,7 +9,6 @@ export default function Home() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             const fetchedUserInfo = await _languageAppService.getUserInfo();
-            console.log(fetchedUserInfo)
             setUserInfo(fetchedUserInfo);
         };
 

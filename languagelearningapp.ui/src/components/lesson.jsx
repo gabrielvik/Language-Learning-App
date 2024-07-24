@@ -8,26 +8,37 @@ export default function Lesson() {
     const _languageAppService = new languageAppService("https://localhost:7134/api");
     const [lessonInfo, setLessonInfo] = useState(null);
     const [selectedLessonType, setSelectedLessonType] = useState(null);
+    const [selectedLessonTypeId, setSelectedLessonTypeId] = useState(0);
     const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
     const [userResponse, setUserResponse] = useState("");
     const [feedback, setFeedback] = useState(null);
+    const [userInfo, setUserInfo] = useState(null);
 
     useEffect(() => {
         const fetchLessonInfo = async () => {
             const fetchedLessonInfo = await _languageAppService.getLessonInfo(lessonId);
             setLessonInfo(fetchedLessonInfo);
-            
         };
 
+        const fetchUserInfo = async () => {
+            const fetchedUserInfo = await _languageAppService.getUserInfo();
+            setUserInfo(fetchedUserInfo);
+        };
+
+        fetchUserInfo();
         fetchLessonInfo();
     }, [lessonId]);
 
     const handleLessonTypeChange = (event) => {
+        const selectedOption = event.target.options[event.target.selectedIndex];
+        const selectedId = Number(selectedOption.getAttribute('data-id'));
+        setSelectedLessonTypeId(selectedId);
         setSelectedLessonType(event.target.value);
         setCurrentPromptIndex(0);
         setUserResponse("");
         setFeedback(null);
     };
+    
 
     const handleResponseChange = (event) => {
         setUserResponse(event.target.value);
@@ -52,6 +63,21 @@ export default function Lesson() {
         setFeedback(null);
     };
 
+    const hasCompletedPrompt = (lessonId, promptId) => {
+        console.log("promptId:", promptId, "Type:", typeof promptId);
+        console.log("learnedLessons[lessonId]:", userInfo.learnedLessons[lessonId]);
+        console.log("Array item type:", typeof userInfo.learnedLessons[lessonId][0]);
+        console.log("Includes check:", userInfo.learnedLessons[lessonId].includes(promptId));
+        
+        return (
+            userInfo &&
+            userInfo.learnedLessons &&
+            userInfo.learnedLessons[lessonId] &&
+            userInfo.learnedLessons[lessonId].includes(promptId)
+        );
+    };
+    
+
     return (
         <div className="lesson-container">
             {lessonInfo && (
@@ -61,7 +87,7 @@ export default function Lesson() {
                     <select onChange={handleLessonTypeChange} value={selectedLessonType}>
                         <option value="">Select...</option>
                         {lessonInfo.map((lesson, index) => (
-                            <option key={index} value={lesson.name}>
+                            <option data-id={index} value={lesson.name}>
                                 {lesson.name}
                             </option>
                         ))}
@@ -71,11 +97,15 @@ export default function Lesson() {
 
             {selectedLessonType && lessonInfo && (
                 <div className="prompt-container">
-                    <h2>{lessonInfo.find(lesson => lesson.name === selectedLessonType).name}</h2>
-                    
+                    <h2>{selectedLessonType}</h2>
                     <label>{lessonInfo.find(lesson => lesson.name === selectedLessonType).prompt[currentPromptIndex]}</label>
-                    
-                    {feedback === null ? (
+
+                    {hasCompletedPrompt(lessonId, selectedLessonTypeId) ? (
+                        <div>
+                            <p>This prompt is already completed. Do you want to do it again?</p>
+                            <button onClick={() => setFeedback(null)}>Redo</button>
+                        </div>
+                    ) : feedback === null ? (
                         <form onSubmit={handleSubmit}>
                             <input
                                 type="text"
