@@ -19,7 +19,7 @@ Language Learning App, using OpenAI's GPT. This application facilitates language
 ### Configuration
 
 1. Obtain an OpenAI API key.
-2. Configure the API key for OpenAI and AppSettings Token in the `appsettings.json` file.
+2. Configure the keys for OpenAI and AppSettings Token in the `appsettings.json` file.
 
 ## Usage
 
