@@ -13,9 +13,15 @@ namespace LanguageLearningApp.API.Controllers
         private readonly UserService _userService;
         private readonly OpenAIAPI _openAiApi;
 
-        public LessonsController(UserService userService)
+        public LessonsController(IConfiguration configuration, UserService userService)
         {
-            _openAiApi = new OpenAIAPI("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");
+            var apiKey = configuration["OpenAI:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new InvalidOperationException("The OpenAI API key is not set in the configuration.");
+            }
+
+            _openAiApi = new OpenAIAPI(apiKey);
             _userService = userService;
         }
 
@@ -85,7 +91,7 @@ namespace LanguageLearningApp.API.Controllers
                 new ChatMessage
                 {
                     Role = ChatMessageRole.System,
-                    Content = $"Evaluate the response: '{request.UserResponse}' to the prompt: '{prompt}' in the context of learning the language: '{learningLanguage}'. Your response should be a short feedback response, respond shortly what can be improved with regard to spelling and grammatical rules of the language, explain why something is correct or incorrect, etc. The response must be a translation of the prompt, and nothing else."
+                    Content = $"Evaluate the response: '{request.UserResponse}' to the prompt: '{prompt}' in the context of learning the language: '{learningLanguage}'. Your response must be a short feedback response, respond shortly what can be improved with regard to spelling and grammatical rules of the language, explain why something is correct or incorrect, etc. The response must be a translation of the prompt, and nothing else."
                 }
                     }
                 });

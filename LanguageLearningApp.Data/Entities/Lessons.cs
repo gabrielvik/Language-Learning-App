@@ -14,6 +14,8 @@ namespace LanguageLearningApp.Data.Entities
         private static void InitializeLessons()
         {
             lessons.Add(0, Greetings.greetings);
+            lessons.Add(1, Food.foods);
+            lessons.Add(2, Numbers.numbers);
         }
 
         public static List<Lesson>? GetLesson(int id)

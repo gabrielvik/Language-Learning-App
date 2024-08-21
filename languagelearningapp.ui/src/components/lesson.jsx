@@ -64,10 +64,10 @@ export default function Lesson() {
     };
 
     const hasCompletedPrompt = (lessonId, promptId) => {
-        console.log("promptId:", promptId, "Type:", typeof promptId);
-        console.log("learnedLessons[lessonId]:", userInfo.learnedLessons[lessonId]);
-        console.log("Array item type:", typeof userInfo.learnedLessons[lessonId][0]);
-        console.log("Includes check:", userInfo.learnedLessons[lessonId].includes(promptId));
+        //console.log("promptId:", promptId, "Type:", typeof promptId);
+        //console.log("learnedLessons[lessonId]:", userInfo.learnedLessons[lessonId]);
+        //console.log("Array item type:", typeof userInfo.learnedLessons[lessonId][0]);
+        //console.log("Includes check:", userInfo.learnedLessons[lessonId].includes(promptId));
         
         return (
             userInfo &&
