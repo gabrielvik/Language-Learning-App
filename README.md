@@ -1,6 +1,6 @@
 # Language Learning App
 
-Welcome to the Language Learning App, powered by OpenAI's GPT. This application facilitates language acquisition through an interactive web platform.
+Language Learning App, using OpenAI's GPT. This application facilitates language acquisition through an interactive web platform.
 
 ## Installation
 
