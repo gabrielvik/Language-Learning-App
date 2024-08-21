@@ -1,6 +1,6 @@
 # Language Learning App
 
-Welcome to the Language Learning App, powered by OpenAI's GPT. This application facilitates language acquisition through an interactive web platform.
+Language Learning App, using OpenAI's GPT. This application facilitates language acquisition through an interactive web platform.
 
 ## Installation
 
@@ -19,7 +19,7 @@ Welcome to the Language Learning App, powered by OpenAI's GPT. This application 
 ### Configuration
 
 1. Obtain an OpenAI API key.
-2. Configure the API key in the `appsettings.json` file.
+2. Configure the API key for OpenAI and AppSettings Token in the `appsettings.json` file.
 
 ## Usage
 
@@ -30,7 +30,7 @@ Welcome to the Language Learning App, powered by OpenAI's GPT. This application 
 
 ## Media
 
-![image](https://github.com/user-attachments/assets/ac257f98-b152-4754-85ce-24836276f836)
+![image](https://github.com/user-attachments/assets/3937ab79-3656-47c5-abe6-40fbfe54b2df)
 ![image](https://github.com/user-attachments/assets/b13697e1-faf9-41f2-8996-359723f74256)
 ![image](https://github.com/user-attachments/assets/edbec2c5-908d-4b26-9c55-b16fd9c80083)
 ![image](https://github.com/user-attachments/assets/c57d4ab1-d722-44b0-bbae-9f24295f8bc9)
